@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use std::hash::{Hash, Hasher};
 
-#[derive(Debug)]
+#[derive(Eq, PartialEq, Debug, Default)]
+// need to understand why Eq and PartialEq were required
 pub struct Cell {
     row: u8,
     column: u8,
@@ -8,9 +10,19 @@ pub struct Cell {
     east: Option<Box<Cell>>,
     south: Option<Box<Cell>>,
     west: Option<Box<Cell>>,
-    links: HashMap<Box<Cell>, bool>
+    links: Box<HashMap<Box<Cell>, bool>>
+    //     ^ why does the whole thing need to be in a Box?
+    //     is it due to the recursive data type?
 }
 
+
+impl Hash for Cell {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.row.hash(state);
+        self.column.hash(state);
+    }
+}
+//
 
 fn main(){
     let cell_one: Cell = Cell {
@@ -20,16 +32,16 @@ fn main(){
         east: None::<Box<Cell>>,
         south: None::<Box<Cell>>,
         west: None::<Box<Cell>>,
-        links: HashMap::new()
+        links: Box::new(HashMap::new())
     };
-    let cell_two: Cell = Cell{
+    let mut cell_two: Cell = Cell{
         row: 0,
         column: 0,
         north: Some(Box::new(cell_one)),
         east: None::<Box<Cell>>,
         south: None::<Box<Cell>>,
         west: None::<Box<Cell>>,
-        links: HashMap::new()
+        links: Box::new(HashMap::new())
     };
     let cell_three: Cell = Cell{
         row: 0,
@@ -38,7 +50,7 @@ fn main(){
         east: None::<Box<Cell>>,
         south: None::<Box<Cell>>,
         west: None::<Box<Cell>>,
-        links: HashMap::new()
+        links: Box::new(HashMap::new())
     };
 
     cell_two.links.insert(Box::new(cell_three), true);

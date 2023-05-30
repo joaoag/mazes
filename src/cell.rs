@@ -8,33 +8,9 @@ pub struct Cell {
     east: Option<Box<Cell>>,
     south: Option<Box<Cell>>,
     west: Option<Box<Cell>>,
-    links: HashMap<Cell, bool>
+    links: HashMap<Box<Cell>, bool>
 }
 
-
-// these probably need to be implemented as traits - might be useful for a blog post?
-
-fn link(source: Cell, target: Cell){
-    source.links.insert(
-        target,
-        true
-    );
-    target.links.insert(
-        source,
-        true
-    )
-    // not sure what's going to happen with ownership here
-}
-
-fn unlink(source: Cell, target: Cell){
-    source.links.remove(
-        target
-    );
-    target.links.remove(
-        source
-    );
-    // same here - who owns what???
-}
 
 fn main(){
     let cell_one: Cell = Cell {
@@ -55,10 +31,16 @@ fn main(){
         west: None::<Box<Cell>>,
         links: HashMap::new()
     };
+    let cell_three: Cell = Cell{
+        row: 0,
+        column: 1,
+        north: None::<Box<Cell>>,
+        east: None::<Box<Cell>>,
+        south: None::<Box<Cell>>,
+        west: None::<Box<Cell>>,
+        links: HashMap::new()
+    };
+
+    cell_two.links.insert(Box::new(cell_three), true);
     println!("{:#?}", cell_two);
 }
-
-
-// next step, look into #[derive(Eq, Hash, PartialEq)]
-// why do you need to derive it?
-// why would it not be implemented by default?

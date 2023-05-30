@@ -22,35 +22,30 @@ impl Hash for Cell {
         self.column.hash(state);
     }
 }
-//
+
+impl Cell {
+    pub fn empty(row: u8, column: u8) -> Self {
+        Cell {
+            row,
+            column,
+            ..Default::default()
+        }
+    }
+}
 
 fn main(){
-    let cell_one: Cell = Cell {
-        row: 1,
-        column: 1,
-        north:  None::<Box<Cell>>,
-        east: None::<Box<Cell>>,
-        south: None::<Box<Cell>>,
-        west: None::<Box<Cell>>,
-        links: Box::new(HashMap::new())
-    };
+    let cell_one: Cell = Cell::empty(1,1);
+
     let mut cell_two: Cell = Cell{
         row: 0,
         column: 0,
         north: Some(Box::new(cell_one)),
-        east: None::<Box<Cell>>,
-        south: None::<Box<Cell>>,
-        west: None::<Box<Cell>>,
-        links: Box::new(HashMap::new())
+        ..Default::default()
     };
     let cell_three: Cell = Cell{
         row: 0,
         column: 1,
-        north: None::<Box<Cell>>,
-        east: None::<Box<Cell>>,
-        south: None::<Box<Cell>>,
-        west: None::<Box<Cell>>,
-        links: Box::new(HashMap::new())
+        ..Default::default()
     };
 
     cell_two.links.insert(Box::new(cell_three), true);

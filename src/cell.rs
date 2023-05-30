@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 
 #[derive(Eq, PartialEq, Debug, Default)]
-// need to understand why Eq and PartialEq were required
 pub struct Cell {
     row: u8,
     column: u8,
@@ -11,8 +10,6 @@ pub struct Cell {
     south: Option<Box<Cell>>,
     west: Option<Box<Cell>>,
     links: Box<HashMap<Box<Cell>, bool>>
-    //     ^ why does the whole thing need to be in a Box?
-    //     is it due to the recursive data type?
 }
 
 
@@ -51,3 +48,11 @@ fn main(){
     cell_two.links.insert(Box::new(cell_three), true);
     println!("{:#?}", cell_two);
 }
+
+// Things I am yet to understand
+// 1. why does links field need to be in a box, why can it not just be HashMap<Box<Cell>, bool>>?
+// (This is probably the same reason as NESW needs to be in Box, i.e. the compiler has no way of knowing the size in advance, so it cannot compile)
+// (Could there be a way to communicate this to the compiler, e.g. declaring a links type?)
+// 2. why was it necessary to manually implement hash for Cell?
+// 3. why is hash() only called on row and column and not the other fields?
+// 4. what is `state` in reference to the hash() function?

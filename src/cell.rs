@@ -20,6 +20,23 @@ impl Hash for Cell {
     }
 }
 
+
+impl Cell {
+    pub fn link(&mut self, target: Box<Cell>){
+        self.links.insert(
+            target,
+            true
+        );
+        // target.links.insert(
+        //     self,
+        //     true
+        // );
+        // println!("{:#?}", target);
+        // not sure what's going to happen with ownership here
+
+    }
+}
+
 impl Cell {
     pub fn empty(row: u8, column: u8) -> Self {
         Cell {
@@ -28,6 +45,7 @@ impl Cell {
             ..Default::default()
         }
     }
+
 }
 
 fn main(){
@@ -56,3 +74,7 @@ fn main(){
 // 2. why was it necessary to manually implement hash for Cell?
 // 3. why is hash() only called on row and column and not the other fields?
 // 4. what is `state` in reference to the hash() function?
+
+
+// Grid
+// should own cells

@@ -1,6 +1,23 @@
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 
+struct Grid {
+    rows: u8,
+    columns: u8,
+    grid: Vec<Vec<Cell>>
+}
+
+impl Grid {
+    pub fn prepare_grid(&mut self) {
+        //     for number of rows in grid, create a new vec
+        for n in 1..=self.rows {
+            println!("making some rows")
+        }
+        //      for number of columns in grid, create a new cell
+        //
+    }
+}
+
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct Cell {
     row: u8,
@@ -63,7 +80,7 @@ fn main(){
         ..Default::default()
     };
 
-    cell_two.links.insert(Box::new(cell_three), true);
+    cell_two.link(Box::new(cell_three));
     println!("{:#?}", cell_two);
 }
 

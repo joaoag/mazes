@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 
+#[derive(Debug)]
 struct Grid {
     rows: u8,
     columns: u8,
@@ -8,13 +9,20 @@ struct Grid {
 }
 
 impl Grid {
-    pub fn prepare_grid(&mut self) {
-        //     for number of rows in grid, create a new vec
-        for n in 1..=self.rows {
-            println!("making some rows")
+
+    pub fn prepare_grid(&mut self) -> Vec<Vec<Cell>> {
+        let mut grid: Vec<Vec<Cell>> = Vec::new();
+
+        for r in 1..=self.rows {
+            let mut row: Vec<Cell> = Vec::new();
+
+            for c in 1..=self.columns {
+                row.push(Cell::empty(r,c));
+            }
+
+            grid.push(row)
         }
-        //      for number of columns in grid, create a new cell
-        //
+        grid
     }
 }
 
@@ -66,22 +74,15 @@ impl Cell {
 }
 
 fn main(){
-    let cell_one: Cell = Cell::empty(1,1);
 
-    let mut cell_two: Cell = Cell{
-        row: 0,
-        column: 0,
-        north: Some(Box::new(cell_one)),
-        ..Default::default()
-    };
-    let cell_three: Cell = Cell{
-        row: 0,
-        column: 1,
-        ..Default::default()
+    let mut grid = Grid {
+        rows: 3,
+        columns: 3,
+        grid: Vec::new()
     };
 
-    cell_two.link(Box::new(cell_three));
-    println!("{:#?}", cell_two);
+    grid.grid = grid.prepare_grid();
+    println!("{:#?}", grid);
 }
 
 // Things I am yet to understand

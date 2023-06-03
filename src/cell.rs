@@ -1,87 +1,155 @@
-use std::collections::HashMap;
-use std::hash::{Hash, Hasher};
-
 #[derive(Debug)]
 struct Grid {
-    rows: u8,
-    columns: u8,
-    grid: Vec<Vec<Cell>>
+    rows: usize,
+    columns: usize,
+    cells: Vec<Vec<Cell>>,
 }
 
 impl Grid {
-
     pub fn prepare_grid(&mut self) -> Vec<Vec<Cell>> {
-        let mut grid: Vec<Vec<Cell>> = Vec::new();
+        let mut cells: Vec<Vec<Cell>> = Vec::new();
 
-        for r in 1..=self.rows {
+        for r in 0..self.rows {
             let mut row: Vec<Cell> = Vec::new();
 
-            for c in 1..=self.columns {
-                row.push(Cell::empty(r,c));
+            for c in 0..self.columns {
+                row.push(Cell::empty(r, c));
             }
 
-            grid.push(row)
+            cells.push(row)
         }
-        grid
+        cells
+    }
+
+    pub fn get_neighbour(
+        rows: &i32,
+        columns: &i32,
+        current_location: &Location,
+        direction: &str,
+    ) -> Option<Location> {
+        let row_range = 0..*rows;
+        let col_range = 0..*columns;
+        let current_row = current_location.row as i32;
+        let current_column = current_location.column as i32;
+
+        match direction {
+            "north" => {
+                if row_range.contains(&(current_row - 1)) {
+                    Some(Location {
+                        row: current_location.row - 1,
+                        column: current_location.column,
+                    })
+                } else {
+                    None
+                }
+            }
+            "east" => {
+                if col_range.contains(&(current_column + 1)) {
+                    Some(Location {
+                        row: current_location.row,
+                        column: current_location.column + 1,
+                    })
+                } else {
+                    None
+                }
+            }
+            "south" => {
+                if row_range.contains(&(current_row + 1)) {
+                    Some(Location {
+                        row: current_location.row + 1,
+                        column: current_location.column,
+                    })
+                } else {
+                    None
+                }
+            }
+            "west" => {
+                if row_range.contains(&(current_column - 1)) {
+                    Some(Location {
+                        row: current_location.row,
+                        column: current_location.column - 1,
+                    })
+                } else {
+                    None
+                }
+            }
+
+            _ => None,
+        }
+    }
+
+    pub fn configure_cells(&mut self) {
+        for row in self.cells.iter_mut() {
+            for cell in row.iter_mut() {
+                let location = Location {
+                    row: cell.row,
+                    column: cell.column,
+                };
+                let rows = *&self.rows as i32;
+                let columns = *&self.columns as i32;
+
+                cell.north = Grid::get_neighbour(&rows, &columns, &location, "north");
+                cell.east = Grid::get_neighbour(&rows, &columns, &location, "east");
+                cell.south = Grid::get_neighbour(&rows, &columns, &location, "south");
+                cell.west = Grid::get_neighbour(&rows, &columns, &location, "west");
+            }
+        }
     }
 }
 
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct Cell {
-    row: u8,
-    column: u8,
-    north: Option<Box<Cell>>,
-    east: Option<Box<Cell>>,
-    south: Option<Box<Cell>>,
-    west: Option<Box<Cell>>,
-    links: Box<HashMap<Box<Cell>, bool>>
+    row: usize,
+    column: usize,
+    north: Option<Location>,
+    east: Option<Location>,
+    south: Option<Location>,
+    west: Option<Location>,
+    links: Vec<Location>,
 }
 
-
-impl Hash for Cell {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.row.hash(state);
-        self.column.hash(state);
-    }
+#[derive(Debug, Eq, PartialEq)]
+pub struct Location {
+    row: usize,
+    column: usize,
 }
-
 
 impl Cell {
-    pub fn link(&mut self, target: Box<Cell>){
-        self.links.insert(
-            target,
-            true
-        );
-        // target.links.insert(
-        //     self,
-        //     true
-        // );
-        // println!("{:#?}", target);
+    pub fn link(&mut self, mut target: Cell) {
+        self.links.push(Location {
+            row: target.row,
+            column: target.column,
+        });
+        target.links.push(Location {
+            row: self.row,
+            column: self.column,
+        });
+
         // not sure what's going to happen with ownership here
-
+        // if using cell instances is too tricky, could just use locations with xy axes instead
     }
 }
 
 impl Cell {
-    pub fn empty(row: u8, column: u8) -> Self {
+    pub fn empty(row: usize, column: usize) -> Self {
         Cell {
             row,
             column,
             ..Default::default()
         }
     }
-
 }
 
-fn main(){
-
+fn main() {
     let mut grid = Grid {
         rows: 3,
         columns: 3,
-        grid: Vec::new()
+        cells: Vec::new(),
     };
 
-    grid.grid = grid.prepare_grid();
+    grid.cells = grid.prepare_grid();
+    // println!("{:#?}", grid);
+    grid.configure_cells();
     println!("{:#?}", grid);
 }
 
@@ -92,7 +160,3 @@ fn main(){
 // 2. why was it necessary to manually implement hash for Cell?
 // 3. why is hash() only called on row and column and not the other fields?
 // 4. what is `state` in reference to the hash() function?
-
-
-// Grid
-// should own cells

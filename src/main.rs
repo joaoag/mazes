@@ -2,55 +2,48 @@ extern crate rand;
 
 use rand::{thread_rng, Rng};
 
-fn binary_tree(mut grid: Grid) {
+fn binary_tree(mut grid: Grid) -> Grid {
     for row in grid.cells.iter_mut() {
         for cell in row.iter_mut() {
-            if cell.north.is_none() & cell.east.is_none() {
-                println!("we're in the top right corner!");
+            let eastern_location = cell.east.unwrap_or_default();
+            let northern_location = cell.north.unwrap_or_default();
+
+            let is_northmost_cell = cell.north.is_none();
+            let is_eastmost_cell = cell.east.is_none();
+            let is_north_eastern_cell = is_northmost_cell & is_eastmost_cell;
+
+            let mut neighbours: Vec<Location> = vec![];
+            let mut linked_neighbour: Location;
+
+            if is_north_eastern_cell {
                 break;
-            }
-            else if cell.north.is_none() {
-                // at this point we're referring to the first row
-                // for binary tree, the eastern cells are always linked
-                // apart from the case handled above
-                // so we want, in this case, to add the eastern location to
-                // current cells 'links' vector
-                // let's try that
-                let eastern_location = cell.east.unwrap();
+            } else if is_northmost_cell {
                 cell.links.push(Location {
                     row: eastern_location.row,
                     column: eastern_location.column,
                 });
-                println!("cell links updated to {:#?}", cell.links);
-            }
-
-            let mut neighbours: Vec<Location> = vec![];
-            if cell.north.is_some() {
-                println!("yep, found a cell to the north");
-                let northern_location = cell.north.unwrap();
+            } else if is_eastmost_cell {
+                cell.links.push(Location {
+                    row: northern_location.row,
+                    column: northern_location.column,
+                });
+            } else {
                 neighbours.push(Location {
                     row: northern_location.row,
                     column: northern_location.column,
-                })
-            }
-            if cell.east.is_some() {
-                println!("yep, found a cell to the east");
-                let eastern_location = cell.east.unwrap();
+                });
+
                 neighbours.push(Location {
                     row: eastern_location.row,
                     column: eastern_location.column,
-                })
+                });
+
+                let index = rand::thread_rng().gen_range(0..=1);
+                linked_neighbour = neighbours[index];
             }
-            // what do we want to do for the top row?
-            // and the eastern row?
-            // always link, I suppose
-            let index = rand::thread_rng().gen_range(0..=1);
-            let linked_neighbour = neighbours[index];
-
-
-
         }
     }
+    grid
 }
 
 #[derive(Debug)]
@@ -163,7 +156,7 @@ pub struct Cell {
     links: Vec<Location>,
 }
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Default)]
 pub struct Location {
     row: usize,
     column: usize,
@@ -200,9 +193,7 @@ fn main() {
     };
 
     grid.cells = grid.prepare_grid();
-    // println!("{:#?}", grid);
     grid.configure_cells();
-    println!("{:#?}", grid);
-
-    binary_tree(grid);
+    grid = binary_tree(grid);
+    println!("{:#?}", grid)
 }

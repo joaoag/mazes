@@ -239,8 +239,6 @@ impl Cell {
         if self.links.is_empty() {
             return false;
         }
-        // assuming no more than one link
-        // which is incorrect
         match direction {
             "north" if self.north.is_some() => self.links.contains(&self.north.unwrap()),
             "east" if self.east.is_some() => self.links.contains(&self.east.unwrap()),
@@ -248,16 +246,6 @@ impl Cell {
             "west" if self.west.is_some() => self.links.contains(&self.west.unwrap()),
             _ => false,
         }
-        // if (direction == "north") & self.north.is_some() {
-        //     is_linked = self.links.contains(&self.north.unwrap());
-        // } else if (direction == "east") & (self.east.is_some()) {
-        //     is_linked = self.links.contains(&self.east.unwrap());
-        // } else if (direction == "south") & (self.south.is_some()) {
-        //     is_linked = self.links.contains(&self.south.unwrap());
-        // } else if (direction == "west") & (self.west.is_some()) {
-        //     is_linked = self.links.contains(&self.west.unwrap());
-        // }
-        // is_linked
     }
 }
 

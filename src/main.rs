@@ -236,30 +236,28 @@ impl Cell {
         }
     }
     pub fn is_linked(&self, direction: &str) -> bool {
-        let mut is_linked = false;
         if self.links.is_empty() {
             return false;
         }
         // assuming no more than one link
         // which is incorrect
-        // match direction {
-        //     "north" if self.north.is_some() => self.links.contains(&self.north.unwrap()),
-        //     "north" if self.east.is_none() => true,
-        //     "east" if self.north.is_none() => true,
-        //     "east" if self.east.is_some() => self.links.contains(&self.east.unwrap()),
-        //     "south" if self.south.is_some() => self.links.contains(&self.south.unwrap()),
-        //     _ => false,
-        // }
-        if (direction == "north") & self.north.is_some() {
-            is_linked = self.links.contains(&self.north.unwrap());
-        } else if (direction == "east") & (self.east.is_some()) {
-            is_linked = self.links.contains(&self.east.unwrap());
-        } else if (direction == "south") & (self.south.is_some()) {
-            is_linked = self.links.contains(&self.south.unwrap());
-        } else if (direction == "west") & (self.west.is_some()) {
-            is_linked = self.links.contains(&self.west.unwrap());
+        match direction {
+            "north" if self.north.is_some() => self.links.contains(&self.north.unwrap()),
+            "east" if self.east.is_some() => self.links.contains(&self.east.unwrap()),
+            "south" if self.south.is_some() => self.links.contains(&self.south.unwrap()),
+            "west" if self.west.is_some() => self.links.contains(&self.west.unwrap()),
+            _ => false,
         }
-        is_linked
+        // if (direction == "north") & self.north.is_some() {
+        //     is_linked = self.links.contains(&self.north.unwrap());
+        // } else if (direction == "east") & (self.east.is_some()) {
+        //     is_linked = self.links.contains(&self.east.unwrap());
+        // } else if (direction == "south") & (self.south.is_some()) {
+        //     is_linked = self.links.contains(&self.south.unwrap());
+        // } else if (direction == "west") & (self.west.is_some()) {
+        //     is_linked = self.links.contains(&self.west.unwrap());
+        // }
+        // is_linked
     }
 }
 

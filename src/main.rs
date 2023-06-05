@@ -31,13 +31,18 @@ fn binary_tree(mut grid: Grid) -> Grid {
                 // println!("identified northmost cell");
                 let eastern_location = cell.east.unwrap();
                 cell.links.push(eastern_location);
-                links.push(Link { source: cell.location, target: eastern_location });
-
+                links.push(Link {
+                    source: cell.location,
+                    target: eastern_location,
+                });
             } else if is_eastmost_cell {
                 // println!("identified eastmost cell");
                 let northern_location = cell.north.unwrap();
                 cell.links.push(northern_location);
-                links.push(Link {source: cell.location, target: northern_location});
+                links.push(Link {
+                    source: cell.location,
+                    target: northern_location,
+                });
             } else {
                 // println!("identified non-eastmost and non-northmost cell");
 
@@ -45,14 +50,16 @@ fn binary_tree(mut grid: Grid) -> Grid {
                     binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
 
                 cell.links.push(linked_neighbour);
-                links.push(Link {source: cell.location, target: linked_neighbour});
-
+                links.push(Link {
+                    source: cell.location,
+                    target: linked_neighbour,
+                });
             }
         }
     }
     // println!("Here's the updated links {:#?}", links);
     for link in links.iter() {
-        let Link {source, target} = link;
+        let Link { source, target } = link;
 
         let target_cell = grid.cells.index_mut(target.row).index_mut(target.column);
         // println!("target cell before linking: {:#?}", target_cell);
@@ -63,10 +70,17 @@ fn binary_tree(mut grid: Grid) -> Grid {
     grid
 }
 
+pub enum Direction {
+    North,
+    East,
+    South,
+    West,
+}
+
 #[derive(Debug)]
 struct Link {
     source: Location,
-    target: Location
+    target: Location,
 }
 
 #[derive(Debug)]
@@ -100,27 +114,23 @@ impl Grid {
 
         for row in self.cells.iter() {
             let mut top = String::from("|");
-            let mut bottom =  String::from("+");
+            let mut bottom = String::from("+");
 
             for cell in row.iter() {
-                println!("Calculating walls for cell {}{}", cell.location.row, cell.location.column);
-
                 let body = "   ";
-                let east_boundary = if Cell::is_linked(&cell, "east") {
+                let east_boundary = if Cell::is_linked(&cell, Direction::East) {
                     " "
                 } else {
                     "|"
                 };
-                println!("Cell is linked to eastern neighbour? {}", Cell::is_linked(&cell, "east"));
 
                 top.push_str((body.to_owned() + east_boundary).as_str());
 
-                let south_boundary = if Cell::is_linked(&cell, "south") {
+                let south_boundary = if Cell::is_linked(&cell, Direction::South) {
                     "   "
                 } else {
                     "---"
                 };
-                println!("Cell is linked to southern neighbour? {}", Cell::is_linked(&cell, "south"));
                 let corner = "+";
                 bottom.push_str((south_boundary.to_owned() + corner).as_str());
             }
@@ -135,7 +145,7 @@ impl Grid {
         rows: &i32,
         columns: &i32,
         current_location: &Location,
-        direction: &str,
+        direction: Direction,
     ) -> Option<Location> {
         let row_range = 0..*rows;
         let col_range = 0..*columns;
@@ -143,7 +153,7 @@ impl Grid {
         let current_column = current_location.column as i32;
 
         match direction {
-            "north" => {
+            Direction::North => {
                 if row_range.contains(&(current_row - 1)) {
                     Some(Location {
                         row: current_location.row - 1,
@@ -153,7 +163,7 @@ impl Grid {
                     None
                 }
             }
-            "east" => {
+            Direction::East => {
                 if col_range.contains(&(current_column + 1)) {
                     Some(Location {
                         row: current_location.row,
@@ -163,7 +173,7 @@ impl Grid {
                     None
                 }
             }
-            "south" => {
+            Direction::South => {
                 if row_range.contains(&(current_row + 1)) {
                     Some(Location {
                         row: current_location.row + 1,
@@ -173,7 +183,7 @@ impl Grid {
                     None
                 }
             }
-            "west" => {
+            Direction::West => {
                 if row_range.contains(&(current_column - 1)) {
                     Some(Location {
                         row: current_location.row,
@@ -183,8 +193,6 @@ impl Grid {
                     None
                 }
             }
-
-            _ => None,
         }
     }
 
@@ -194,11 +202,10 @@ impl Grid {
                 let rows = *&self.rows as i32;
                 let columns = *&self.columns as i32;
 
-                // TODO create direction enum
-                cell.north = Grid::get_neighbour(&rows, &columns, &cell.location, "north");
-                cell.east = Grid::get_neighbour(&rows, &columns, &cell.location, "east");
-                cell.south = Grid::get_neighbour(&rows, &columns, &cell.location, "south");
-                cell.west = Grid::get_neighbour(&rows, &columns, &cell.location, "west");
+                cell.north = Grid::get_neighbour(&rows, &columns, &cell.location, Direction::North);
+                cell.east = Grid::get_neighbour(&rows, &columns, &cell.location, Direction::East);
+                cell.south = Grid::get_neighbour(&rows, &columns, &cell.location, Direction::South);
+                cell.west = Grid::get_neighbour(&rows, &columns, &cell.location, Direction::West);
             }
         }
     }
@@ -235,15 +242,15 @@ impl Cell {
             ..Default::default()
         }
     }
-    pub fn is_linked(&self, direction: &str) -> bool {
+    pub fn is_linked(&self, direction: Direction) -> bool {
         if self.links.is_empty() {
             return false;
         }
         match direction {
-            "north" if self.north.is_some() => self.links.contains(&self.north.unwrap()),
-            "east" if self.east.is_some() => self.links.contains(&self.east.unwrap()),
-            "south" if self.south.is_some() => self.links.contains(&self.south.unwrap()),
-            "west" if self.west.is_some() => self.links.contains(&self.west.unwrap()),
+            Direction::North if self.north.is_some() => self.links.contains(&self.north.unwrap()),
+            Direction::East if self.east.is_some() => self.links.contains(&self.east.unwrap()),
+            Direction::South if self.south.is_some() => self.links.contains(&self.south.unwrap()),
+            Direction::West if self.west.is_some() => self.links.contains(&self.west.unwrap()),
             _ => false,
         }
     }

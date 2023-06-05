@@ -2,44 +2,41 @@ extern crate rand;
 
 use rand::{thread_rng, Rng};
 
+fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
+    let mut neighbours: Vec<Location> = vec![];
+    neighbours.extend([eastern, northern]);
+
+    let index = rand::thread_rng().gen_range(0..=1);
+    let linked_neighbour = neighbours[index];
+    linked_neighbour
+}
+
 fn binary_tree(mut grid: Grid) -> Grid {
     for row in grid.cells.iter_mut() {
         for cell in row.iter_mut() {
-            let eastern_location = cell.east.unwrap_or_default();
-            let northern_location = cell.north.unwrap_or_default();
-
             let is_northmost_cell = cell.north.is_none();
             let is_eastmost_cell = cell.east.is_none();
             let is_north_eastern_cell = is_northmost_cell & is_eastmost_cell;
 
-            let mut neighbours: Vec<Location> = vec![];
-            let mut linked_neighbour: Location;
+            // use cell.links()?
+            // how to bi-directionally update?
 
             if is_north_eastern_cell {
+                println!("identified north eastern cell");
                 break;
             } else if is_northmost_cell {
-                cell.links.push(Location {
-                    row: eastern_location.row,
-                    column: eastern_location.column,
-                });
+                println!("identified northmost cell");
+                cell.links.push(cell.east.unwrap());
             } else if is_eastmost_cell {
-                cell.links.push(Location {
-                    row: northern_location.row,
-                    column: northern_location.column,
-                });
+                println!("identified eastmost cell");
+                cell.links.push(cell.north.unwrap());
             } else {
-                neighbours.push(Location {
-                    row: northern_location.row,
-                    column: northern_location.column,
-                });
+                println!("identified non-eastmost and non-northmost cell");
 
-                neighbours.push(Location {
-                    row: eastern_location.row,
-                    column: eastern_location.column,
-                });
+                let linked_neighbour =
+                    binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
 
-                let index = rand::thread_rng().gen_range(0..=1);
-                linked_neighbour = neighbours[index];
+                cell.links.push(linked_neighbour);
             }
         }
     }
@@ -194,6 +191,7 @@ fn main() {
 
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
+    // println!("{:#?}", grid);
     grid = binary_tree(grid);
-    println!("{:#?}", grid)
+    println!("{:#?}", grid);
 }

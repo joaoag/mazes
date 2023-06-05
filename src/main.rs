@@ -1,6 +1,7 @@
 extern crate rand;
 
-use rand::{thread_rng, Rng};
+use rand::Rng;
+use std::ops::IndexMut;
 
 fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
     let mut neighbours: Vec<Location> = vec![];
@@ -12,6 +13,8 @@ fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Locati
 }
 
 fn binary_tree(mut grid: Grid) -> Grid {
+    let mut links: Vec<Link> = vec![];
+
     for row in grid.cells.iter_mut() {
         for cell in row.iter_mut() {
             let is_northmost_cell = cell.north.is_none();
@@ -22,25 +25,48 @@ fn binary_tree(mut grid: Grid) -> Grid {
             // how to bi-directionally update?
 
             if is_north_eastern_cell {
-                println!("identified north eastern cell");
+                // println!("identified north eastern cell");
                 break;
             } else if is_northmost_cell {
-                println!("identified northmost cell");
-                cell.links.push(cell.east.unwrap());
+                // println!("identified northmost cell");
+                let eastern_location = cell.east.unwrap();
+                cell.links.push(eastern_location);
+                links.push(Link { source: cell.location, target: eastern_location });
+
             } else if is_eastmost_cell {
-                println!("identified eastmost cell");
-                cell.links.push(cell.north.unwrap());
+                // println!("identified eastmost cell");
+                let northern_location = cell.north.unwrap();
+                cell.links.push(northern_location);
+                links.push(Link {source: cell.location, target: northern_location});
             } else {
-                println!("identified non-eastmost and non-northmost cell");
+                // println!("identified non-eastmost and non-northmost cell");
 
                 let linked_neighbour =
                     binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
 
                 cell.links.push(linked_neighbour);
+                links.push(Link {source: cell.location, target: linked_neighbour});
+
             }
         }
     }
+    // println!("Here's the updated links {:#?}", links);
+    for link in links.iter() {
+        let Link {source, target} = link;
+
+        let target_cell = grid.cells.index_mut(target.row).index_mut(target.column);
+        // println!("target cell before linking: {:#?}", target_cell);
+        // println!("should next have source cell added to its links: {:#?}", source);
+        target_cell.links.push(*source);
+        // println!("target cell: {:#?}", target_cell);
+    }
     grid
+}
+
+#[derive(Debug)]
+struct Link {
+    source: Location,
+    target: Location
 }
 
 #[derive(Debug)]
@@ -64,6 +90,45 @@ impl Grid {
             cells.push(row)
         }
         cells
+    }
+
+    pub fn display_maze(self) {
+        let start = String::from("+");
+        let middle = String::from("---+".repeat(self.columns));
+        let end = String::from("\n");
+        let mut output = format!("{}{}{}", start, middle, end); // this is correct
+
+        for row in self.cells.iter() {
+            let mut top = String::from("|");
+            let mut bottom =  String::from("+");
+
+            for cell in row.iter() {
+                println!("Calculating walls for cell {}{}", cell.location.row, cell.location.column);
+
+                let body = "   ";
+                let east_boundary = if Cell::is_linked(&cell, "east") {
+                    " "
+                } else {
+                    "|"
+                };
+                println!("Cell is linked to eastern neighbour? {}", Cell::is_linked(&cell, "east"));
+
+                top.push_str((body.to_owned() + east_boundary).as_str());
+
+                let south_boundary = if Cell::is_linked(&cell, "south") {
+                    "   "
+                } else {
+                    "---"
+                };
+                println!("Cell is linked to southern neighbour? {}", Cell::is_linked(&cell, "south"));
+                let corner = "+";
+                bottom.push_str((south_boundary.to_owned() + corner).as_str());
+            }
+            output.push_str((top.to_owned() + "\n").as_str());
+            output.push_str((bottom.to_owned() + "\n").as_str());
+        }
+
+        println!("{}", output);
     }
 
     pub fn get_neighbour(
@@ -126,17 +191,14 @@ impl Grid {
     pub fn configure_cells(&mut self) {
         for row in self.cells.iter_mut() {
             for cell in row.iter_mut() {
-                let location = Location {
-                    row: cell.row,
-                    column: cell.column,
-                };
                 let rows = *&self.rows as i32;
                 let columns = *&self.columns as i32;
 
-                cell.north = Grid::get_neighbour(&rows, &columns, &location, "north");
-                cell.east = Grid::get_neighbour(&rows, &columns, &location, "east");
-                cell.south = Grid::get_neighbour(&rows, &columns, &location, "south");
-                cell.west = Grid::get_neighbour(&rows, &columns, &location, "west");
+                // TODO create direction enum
+                cell.north = Grid::get_neighbour(&rows, &columns, &cell.location, "north");
+                cell.east = Grid::get_neighbour(&rows, &columns, &cell.location, "east");
+                cell.south = Grid::get_neighbour(&rows, &columns, &cell.location, "south");
+                cell.west = Grid::get_neighbour(&rows, &columns, &cell.location, "west");
             }
         }
     }
@@ -144,8 +206,7 @@ impl Grid {
 
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct Cell {
-    row: usize,
-    column: usize,
+    location: Location,
     north: Option<Location>,
     east: Option<Location>,
     south: Option<Location>,
@@ -161,31 +222,51 @@ pub struct Location {
 
 impl Cell {
     pub fn link(&mut self, mut target: Cell) {
-        self.links.push(Location {
-            row: target.row,
-            column: target.column,
-        });
-        target.links.push(Location {
-            row: self.row,
-            column: self.column,
-        });
+        println!("{:#?}", self);
+        println!("{:#?}", target);
+        self.links.push(target.location);
+        target.links.push(self.location);
+        println!("{:#?}", self);
+        println!("{:#?}", target);
     }
-}
-
-impl Cell {
     pub fn empty(row: usize, column: usize) -> Self {
         Cell {
-            row,
-            column,
+            location: Location { row, column },
             ..Default::default()
         }
+    }
+    pub fn is_linked(&self, direction: &str) -> bool {
+        let mut is_linked = false;
+        if self.links.is_empty() {
+            return false;
+        }
+        // assuming no more than one link
+        // which is incorrect
+        // match direction {
+        //     "north" if self.north.is_some() => self.links.contains(&self.north.unwrap()),
+        //     "north" if self.east.is_none() => true,
+        //     "east" if self.north.is_none() => true,
+        //     "east" if self.east.is_some() => self.links.contains(&self.east.unwrap()),
+        //     "south" if self.south.is_some() => self.links.contains(&self.south.unwrap()),
+        //     _ => false,
+        // }
+        if (direction == "north") & self.north.is_some() {
+            is_linked = self.links.contains(&self.north.unwrap());
+        } else if (direction == "east") & (self.east.is_some()) {
+            is_linked = self.links.contains(&self.east.unwrap());
+        } else if (direction == "south") & (self.south.is_some()) {
+            is_linked = self.links.contains(&self.south.unwrap());
+        } else if (direction == "west") & (self.west.is_some()) {
+            is_linked = self.links.contains(&self.west.unwrap());
+        }
+        is_linked
     }
 }
 
 fn main() {
     let mut grid = Grid {
-        rows: 3,
-        columns: 3,
+        rows: 10,
+        columns: 10,
         cells: Vec::new(),
     };
 
@@ -193,5 +274,6 @@ fn main() {
     grid.configure_cells();
     // println!("{:#?}", grid);
     grid = binary_tree(grid);
-    println!("{:#?}", grid);
+    // println!("{:#?}", grid);
+    grid.display_maze();
 }

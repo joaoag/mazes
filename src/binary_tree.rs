@@ -1,7 +1,8 @@
-extern crate rand;
 use std::ops::IndexMut;
-use location::Location;
-use self::rand::Rng;
+use rand::Rng;
+
+use crate::Grid;
+use crate::location::Location;
 
 #[derive(Debug)]
 struct Link {

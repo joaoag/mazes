@@ -1,4 +1,6 @@
-use cell::Cell;
+use crate::cell::Cell;
+use crate::direction::Direction;
+use crate::grid::Grid;
 
 pub fn display_maze(grid: &Grid) {
     let start = String::from("+");

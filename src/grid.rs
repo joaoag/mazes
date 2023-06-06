@@ -1,12 +1,12 @@
-use cell::Cell;
-use location::Location;
-use direction::Direction;
+use crate::cell::Cell;
+use crate::location::Location;
+use crate::direction::Direction;
 
 #[derive(Debug)]
-struct Grid {
-    rows: usize,
-    columns: usize,
-    cells: Vec<Vec<Cell>>,
+pub struct Grid {
+    pub rows: usize,
+    pub columns: usize,
+    pub cells: Vec<Vec<Cell>>,
 }
 
 impl Grid {

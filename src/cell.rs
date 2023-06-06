@@ -1,4 +1,5 @@
-use location::Location;
+use crate::location::Location;
+use crate::direction::Direction;
 
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct Cell {

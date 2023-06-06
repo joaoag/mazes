@@ -1,11 +1,13 @@
-mod display;
-mod cell;
+use crate::grid::Grid;
+use crate::display::display_maze;
+use crate::binary_tree::binary_tree;
+
 mod grid;
+mod cell;
+mod display;
 mod binary_tree;
 mod location;
 mod direction;
-
-use binary_tree::binary_tree;
 
 fn main() {
     let mut grid = Grid {
@@ -17,5 +19,5 @@ fn main() {
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
     grid = binary_tree(grid, links_are_bidirectional);
-    grid.display_maze();
+    display_maze(&grid);
 }

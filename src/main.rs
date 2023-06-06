@@ -21,14 +21,11 @@ fn binary_tree(mut grid: Grid) -> Grid {
             let is_eastmost_cell = cell.east.is_none();
             let is_north_eastern_cell = is_northmost_cell & is_eastmost_cell;
 
-            // use cell.links()?
-            // how to bi-directionally update?
+            // TODO investigate smart pointers for bi-directional updates
 
             if is_north_eastern_cell {
-                // println!("identified north eastern cell");
                 break;
             } else if is_northmost_cell {
-                // println!("identified northmost cell");
                 let eastern_location = cell.east.unwrap();
                 cell.links.push(eastern_location);
                 links.push(Link {
@@ -36,7 +33,6 @@ fn binary_tree(mut grid: Grid) -> Grid {
                     target: eastern_location,
                 });
             } else if is_eastmost_cell {
-                // println!("identified eastmost cell");
                 let northern_location = cell.north.unwrap();
                 cell.links.push(northern_location);
                 links.push(Link {
@@ -44,8 +40,6 @@ fn binary_tree(mut grid: Grid) -> Grid {
                     target: northern_location,
                 });
             } else {
-                // println!("identified non-eastmost and non-northmost cell");
-
                 let linked_neighbour =
                     binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
 
@@ -57,15 +51,11 @@ fn binary_tree(mut grid: Grid) -> Grid {
             }
         }
     }
-    // println!("Here's the updated links {:#?}", links);
     for link in links.iter() {
         let Link { source, target } = link;
 
         let target_cell = grid.cells.index_mut(target.row).index_mut(target.column);
-        // println!("target cell before linking: {:#?}", target_cell);
-        // println!("should next have source cell added to its links: {:#?}", source);
         target_cell.links.push(*source);
-        // println!("target cell: {:#?}", target_cell);
     }
     grid
 }
@@ -228,14 +218,9 @@ pub struct Location {
 }
 
 impl Cell {
-    pub fn link(&mut self, mut target: Cell) {
-        println!("{:#?}", self);
-        println!("{:#?}", target);
-        self.links.push(target.location);
-        target.links.push(self.location);
-        println!("{:#?}", self);
-        println!("{:#?}", target);
-    }
+    // pub fn link(&mut self, target_cell: Location) {
+    //     self.links.push(target_cell);
+    // }
     pub fn empty(row: usize, column: usize) -> Self {
         Cell {
             location: Location { row, column },
@@ -265,8 +250,6 @@ fn main() {
 
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
-    // println!("{:#?}", grid);
     grid = binary_tree(grid);
-    // println!("{:#?}", grid);
     grid.display_maze();
 }

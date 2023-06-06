@@ -1,5 +1,5 @@
-use crate::location::Location;
 use crate::direction::Direction;
+use crate::location::Location;
 
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct Cell {
@@ -10,7 +10,6 @@ pub struct Cell {
     pub west: Option<Location>,
     pub links: Vec<Location>,
 }
-
 
 impl Cell {
     // pub fn link(&mut self, target_cell: Location) {

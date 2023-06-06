@@ -1,6 +1,6 @@
 use crate::cell::Cell;
-use crate::location::Location;
 use crate::direction::Direction;
+use crate::location::Location;
 
 #[derive(Debug)]
 pub struct Grid {
@@ -24,7 +24,6 @@ impl Grid {
         }
         cells
     }
-
 
     pub fn get_neighbour(
         rows: &i32,

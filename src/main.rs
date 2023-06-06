@@ -1,13 +1,13 @@
-use crate::grid::Grid;
-use crate::display::display_maze;
 use crate::binary_tree::binary_tree;
+use crate::display::display_maze;
+use crate::grid::Grid;
 
-mod grid;
-mod cell;
-mod display;
 mod binary_tree;
-mod location;
+mod cell;
 mod direction;
+mod display;
+mod grid;
+mod location;
 
 fn main() {
     let mut grid = Grid {

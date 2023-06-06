@@ -1,16 +1,14 @@
-use std::ops::IndexMut;
 use rand::Rng;
+use std::ops::IndexMut;
 
-use crate::Grid;
 use crate::location::Location;
+use crate::Grid;
 
 #[derive(Debug)]
 struct Link {
     source: Location,
     target: Location,
 }
-
-
 
 fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
     let mut neighbours: Vec<Location> = vec![];
@@ -21,7 +19,7 @@ fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Locati
     linked_neighbour
 }
 
-pub fn binary_tree(mut grid: Grid, bidirectional_link: bool ) -> Grid {
+pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
     let mut links: Vec<Link> = vec![];
 
     for row in grid.cells.iter_mut() {

@@ -2,7 +2,6 @@ extern crate rand;
 
 use crate::binary_tree::binary_tree;
 use crate::display::display_maze;
-use crate::grid::Grid;
 use crate::side_winder::side_winder;
 use smart_grid::SmartGrid;
 
@@ -10,7 +9,6 @@ mod binary_tree;
 mod cell;
 mod direction;
 mod display;
-mod grid;
 mod link;
 mod location;
 mod side_winder;

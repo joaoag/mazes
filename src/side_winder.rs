@@ -1,4 +1,3 @@
-use crate::link::Link;
 use crate::location::Location;
 use crate::rand::Rng;
 use crate::smart_grid::SmartGrid;

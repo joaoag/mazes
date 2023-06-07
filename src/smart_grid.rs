@@ -3,7 +3,6 @@ use crate::direction::Direction;
 use crate::location::Location;
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::slice::Iter;
 
 #[derive(Debug)]
 pub struct SmartGrid {

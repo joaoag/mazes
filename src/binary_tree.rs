@@ -1,7 +1,5 @@
 use rand::Rng;
-use std::ops::IndexMut;
 
-use crate::link::Link;
 use crate::location::Location;
 use crate::smart_grid::SmartGrid;
 

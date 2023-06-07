@@ -9,8 +9,14 @@ pub struct Grid {
     pub cells: Vec<Vec<Cell>>,
 }
 
+pub trait GridTrait {
+    fn prepare_grid(&mut self) -> Vec<Vec<Cell>>;
+    fn get_neighbour( rows: &i32, columns: &i32, current_location: &Location, direction: Direction) -> Option<Location>;
+    fn configure_cells(&mut self);
+}
+
 impl Grid {
-    pub fn prepare_grid(&mut self) -> Vec<Vec<Cell>> {
+    fn prepare_grid(&mut self) -> Vec<Vec<Cell>> {
         let mut cells: Vec<Vec<Cell>> = Vec::new();
 
         for r in 0..self.rows {
@@ -25,7 +31,7 @@ impl Grid {
         cells
     }
 
-    pub fn get_neighbour(
+    fn get_neighbour(
         rows: &i32,
         columns: &i32,
         current_location: &Location,
@@ -80,7 +86,7 @@ impl Grid {
         }
     }
 
-    pub fn configure_cells(&mut self) {
+    fn configure_cells(&mut self) {
         for row in self.cells.iter_mut() {
             for cell in row.iter_mut() {
                 let rows = *&self.rows as i32;

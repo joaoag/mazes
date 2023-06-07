@@ -3,6 +3,7 @@ use crate::direction::Direction;
 use crate::location::Location;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::slice::Iter;
 
 #[derive(Debug)]
 pub struct SmartGrid {
@@ -111,4 +112,8 @@ impl SmartGrid {
             }
         }
     }
+    
+    // pub fn iter_cells(&self) -> Iter<Vec<Rc<RefCell<Cell>>>> {
+    //     self.cells.iter()
+    // }
 }

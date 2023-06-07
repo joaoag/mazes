@@ -9,13 +9,13 @@ use std::slice::Iter;
 pub struct SmartGrid {
     pub rows: usize,
     pub columns: usize,
-    pub cells: Vec<Vec<Rc<RefCell<MazeCell>>>>
+    pub cells: Vec<Vec<Rc<RefCell<MazeCell>>>>,
 }
 
 impl SmartGrid {
     pub fn prepare_grid(&mut self) -> Vec<Vec<Rc<RefCell<MazeCell>>>> {
         // TODO use new consistently for initialising empty Vec
-        let mut cells  = Vec::new();
+        let mut cells = Vec::new();
         // can I wrap the Rc and RefCell in a type, say SmartCell
         // no leave this out, it's idiomatic and expressive to Rust people, wrapping in a type might obscure this
         // TODO look into Arc<Mutex>
@@ -24,7 +24,7 @@ impl SmartGrid {
             let mut row: Vec<Rc<RefCell<MazeCell>>> = Vec::new();
 
             for c in 0..self.columns {
-                row.push(Rc::new (RefCell::new (MazeCell::empty(r, c))));
+                row.push(Rc::new(RefCell::new(MazeCell::empty(r, c))));
             }
 
             cells.push(row)
@@ -95,12 +95,20 @@ impl SmartGrid {
                 let mut cell = cell.borrow_mut();
                 // unknown why below does not work
                 // let mut cell = *cell.borrow_mut();
-                cell.north = SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::North);
-                cell.east = SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::East);
-                cell.south = SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::South);
-                cell.west = SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::West);
+                // it doesn't work because we're using *
+                // * de-references cell
+                // but cell is wrapped in Rc<> *and* RefCell<>
+                // Rc<> must have a valid reference, otherwise it's pointless (pointer-less...?)
+                // RefCell<> guess same must be the same for that?
+                cell.north =
+                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::North);
+                cell.east =
+                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::East);
+                cell.south =
+                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::South);
+                cell.west =
+                    SmartGrid::get_neighbour(&rows, &columns, &cell.location, Direction::West);
             }
         }
     }
-
 }

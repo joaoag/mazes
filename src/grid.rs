@@ -11,7 +11,12 @@ pub struct Grid {
 
 pub trait GridTrait {
     fn prepare_grid(&mut self) -> Vec<Vec<MazeCell>>;
-    fn get_neighbour( rows: &i32, columns: &i32, current_location: &Location, direction: Direction) -> Option<Location>;
+    fn get_neighbour(
+        rows: &i32,
+        columns: &i32,
+        current_location: &Location,
+        direction: Direction,
+    ) -> Option<Location>;
     fn configure_cells(&mut self);
 }
 

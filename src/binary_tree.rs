@@ -15,13 +15,15 @@ fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Locati
 }
 
 pub fn binary_tree(grid: SmartGrid, bidirectional_link: bool) -> SmartGrid {
+    //TODO implement cell.link() so can encapsulate bi-directional link logic
+    // in that method rather than having it exposed in the if-else branches
+    // signature would be ... ?
     for row in &grid.cells {
         for cell in row {
             let mut cell = cell.borrow_mut();
             let is_northmost_cell = cell.north.is_none();
             let is_eastmost_cell = cell.east.is_none();
             let is_north_eastern_cell = is_northmost_cell & is_eastmost_cell;
-
 
             if is_north_eastern_cell {
                 break;

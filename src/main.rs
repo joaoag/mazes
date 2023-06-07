@@ -20,10 +20,9 @@ fn main() {
         columns: 10,
         cells: Vec::new(),
     };
-    let links_are_bidirectional = true;
     grid.cells = grid.prepare_grid();
     grid.configure_cells();
-    grid = binary_tree(grid, links_are_bidirectional);
-    // grid = side_winder(grid);
+    // grid = binary_tree(grid);
+    grid = side_winder(grid);
     display_maze(&grid);
 }

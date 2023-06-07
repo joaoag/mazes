@@ -1,7 +1,7 @@
 use crate::cell::MazeCell;
 use crate::direction::Direction;
 use crate::location::Location;
-use std::cell::RefCell;
+use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
 #[derive(Debug)]
@@ -83,6 +83,20 @@ impl SmartGrid {
                     None
                 }
             }
+        }
+    }
+    pub fn link_cells(
+        &self,
+        mut source: RefMut<MazeCell>,
+        target: Location,
+        is_bidirectional: bool,
+    ) {
+        if is_bidirectional {
+            source.links.push(target);
+            let mut target_cell = self.cells[target.row][target.column].borrow_mut();
+            target_cell.links.push(source.location);
+        } else {
+            source.links.push(target);
         }
     }
 

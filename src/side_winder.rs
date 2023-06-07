@@ -3,12 +3,14 @@ use crate::rand::Rng;
 use crate::smart_grid::SmartGrid;
 use rand::seq::SliceRandom;
 
+const BIDI: bool = true;
+
 pub fn side_winder(grid: SmartGrid) -> SmartGrid {
     for row in &grid.cells {
         let mut run: Vec<Location> = Vec::new();
 
         for cell in row {
-            let mut cell = cell.borrow_mut();
+            let cell = cell.borrow_mut();
             let is_northmost_cell = cell.north.is_none();
             let is_eastmost_cell = cell.east.is_none();
             let zero_or_one = rand::thread_rng().gen_range(0..=1);
@@ -18,7 +20,7 @@ pub fn side_winder(grid: SmartGrid) -> SmartGrid {
 
             if should_close_run {
                 let member_location = run.choose(&mut rand::thread_rng()).unwrap();
-                let mut member_cell;
+                let member_cell;
                 if member_location == &cell.location {
                     member_cell = cell;
                 } else {
@@ -28,22 +30,12 @@ pub fn side_winder(grid: SmartGrid) -> SmartGrid {
 
                 if !is_northmost_cell {
                     let northern_location = member_cell.north.unwrap();
-                    member_cell.links.push(northern_location);
-
-                    // assuming bidirectional links
-                    let mut target_cell =
-                        grid.cells[northern_location.row][northern_location.column].borrow_mut();
-                    target_cell.links.push(member_cell.location);
-
+                    SmartGrid::link_cells(&grid, member_cell, northern_location, BIDI);
                     run.clear();
                 }
             } else {
                 let eastern_location = cell.east.unwrap();
-                cell.links.push(eastern_location);
-
-                let mut target_cell =
-                    grid.cells[eastern_location.row][eastern_location.column].borrow_mut();
-                target_cell.links.push(cell.location);
+                SmartGrid::link_cells(&grid, cell, eastern_location, BIDI);
             }
         }
     }

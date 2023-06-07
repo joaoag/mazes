@@ -9,7 +9,7 @@ pub fn side_winder(grid: SmartGrid) -> SmartGrid {
         let mut run: Vec<Location> = Vec::new();
 
         for cell in row {
-            let cell = cell.borrow_mut();
+            let mut cell = cell.borrow_mut();
             let is_northmost_cell = cell.north.is_none();
             let is_eastmost_cell = cell.east.is_none();
             let zero_or_one = rand::thread_rng().gen_range(0..=1);
@@ -19,10 +19,6 @@ pub fn side_winder(grid: SmartGrid) -> SmartGrid {
 
             if should_close_run {
                 let member_location = run.choose(&mut rand::thread_rng()).unwrap();
-                // if member_location is current cell
-                // leave cell as is
-                // else
-                // re-assign cell to member location (hopefully freeing up original borrow?)
                 let mut member_cell;
                 if member_location == &cell.location {
                     member_cell = cell;
@@ -42,6 +38,13 @@ pub fn side_winder(grid: SmartGrid) -> SmartGrid {
 
                     run.clear();
                 }
+            } else {
+                let eastern_location = cell.east.unwrap();
+                cell.links.push(eastern_location);
+
+                let mut target_cell =
+                    grid.cells[eastern_location.row][eastern_location.column].borrow_mut();
+                target_cell.links.push(cell.location);
             }
         }
     }

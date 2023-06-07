@@ -12,8 +12,10 @@ pub struct MazeCell {
 }
 
 impl MazeCell {
-    pub fn link(&mut self, target_cell: Location) {
-        self.links.push(target_cell);
+    pub fn link(&mut self, linked_to: Location) {
+        // MVP, update a cell with a target
+        // v 1.0, also update target cell
+        self.links.push(linked_to);
     }
 
     pub fn empty(row: usize, column: usize) -> Self {

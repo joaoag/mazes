@@ -27,28 +27,29 @@ pub fn binary_tree(grid: SmartGrid, bidirectional_link: bool) -> SmartGrid {
                 break;
             } else if is_northmost_cell {
                 let eastern_location = cell.east.unwrap();
-                cell.links.push(eastern_location);
+                // cell.links.push(eastern_location);
+                cell.link(eastern_location);
                 if bidirectional_link {
                     let mut target_cell =
                         grid.cells[eastern_location.row][eastern_location.column].borrow_mut();
-                    target_cell.links.push(cell.location);
+                    target_cell.link(cell.location);
                 }
             } else if is_eastmost_cell {
                 let northern_location = cell.north.unwrap();
-                cell.links.push(northern_location);
+                cell.link(northern_location);
                 if bidirectional_link {
                     let mut target_cell =
                         grid.cells[northern_location.row][northern_location.column].borrow_mut();
-                    target_cell.links.push(cell.location);
+                    target_cell.link(cell.location);
                 }
             } else {
                 let linked_neighbour =
                     binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
-                cell.links.push(linked_neighbour);
+                cell.link(linked_neighbour);
                 if bidirectional_link {
                     let mut target_cell =
                         grid.cells[linked_neighbour.row][linked_neighbour.column].borrow_mut();
-                    target_cell.links.push(cell.location);
+                    target_cell.link(cell.location);
                 }
             }
         }

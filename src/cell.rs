@@ -1,9 +1,8 @@
 use crate::direction::Direction;
 use crate::location::Location;
 
-//TODO change name so not too similar to smart pointer Cell
 #[derive(Eq, PartialEq, Debug, Default)]
-pub struct Cell {
+pub struct MazeCell {
     pub location: Location,
     pub north: Option<Location>,
     pub east: Option<Location>,
@@ -12,13 +11,13 @@ pub struct Cell {
     pub links: Vec<Location>,
 }
 
-impl Cell {
+impl MazeCell {
     pub fn link(&mut self, target_cell: Location) {
         self.links.push(target_cell);
     }
 
     pub fn empty(row: usize, column: usize) -> Self {
-        Cell {
+        MazeCell {
             location: Location { row, column },
             ..Default::default()
         }

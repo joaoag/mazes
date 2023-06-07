@@ -1,4 +1,4 @@
-use crate::cell::Cell;
+use crate::cell::MazeCell;
 use crate::direction::Direction;
 use crate::location::Location;
 use std::cell::RefCell;
@@ -9,21 +9,11 @@ use std::slice::Iter;
 pub struct SmartGrid {
     pub rows: usize,
     pub columns: usize,
-    pub cells: Vec<Vec<Rc<RefCell<Cell>>>>
-// I am assuming this is enough to make each Cell available to mutate later
-// I wonder if it is the case that I need to declare the Cell *and* inner Vec
-// as Rc<RefCell<Vec<Rc<RefCell<Vec<Rc<RefCell<Cell>>>>>>>>
-// That looks horrendous, surely not
+    pub cells: Vec<Vec<Rc<RefCell<MazeCell>>>>
 }
 
-// I have a data structure that has the shape of
-// Vec<Vec<Cell>>
-// I need an ownership model that allows the below behaviour when iterating one of the inner Vecs
-// I can update the current element in the iteration
-// I can update an arbitrary element in any of the other inner Vecs
-
 impl SmartGrid {
-    pub fn prepare_grid(&mut self) -> Vec<Vec<Rc<RefCell<Cell>>>> {
+    pub fn prepare_grid(&mut self) -> Vec<Vec<Rc<RefCell<MazeCell>>>> {
         // TODO use new consistently for initialising empty Vec
         let mut cells  = Vec::new();
         // can I wrap the Rc and RefCell in a type, say SmartCell
@@ -31,10 +21,10 @@ impl SmartGrid {
         // TODO look into Arc<Mutex>
 
         for r in 0..self.rows {
-            let mut row: Vec<Rc<RefCell<Cell>>> = Vec::new();
+            let mut row: Vec<Rc<RefCell<MazeCell>>> = Vec::new();
 
             for c in 0..self.columns {
-                row.push(Rc::new (RefCell::new (Cell::empty(r, c))));
+                row.push(Rc::new (RefCell::new (MazeCell::empty(r, c))));
             }
 
             cells.push(row)
@@ -112,8 +102,5 @@ impl SmartGrid {
             }
         }
     }
-    
-    // pub fn iter_cells(&self) -> Iter<Vec<Rc<RefCell<Cell>>>> {
-    //     self.cells.iter()
-    // }
+
 }

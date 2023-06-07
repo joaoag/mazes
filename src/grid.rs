@@ -1,4 +1,4 @@
-use crate::cell::Cell;
+use crate::cell::MazeCell;
 use crate::direction::Direction;
 use crate::location::Location;
 
@@ -6,24 +6,24 @@ use crate::location::Location;
 pub struct Grid {
     pub rows: usize,
     pub columns: usize,
-    pub cells: Vec<Vec<Cell>>,
+    pub cells: Vec<Vec<MazeCell>>,
 }
 
 pub trait GridTrait {
-    fn prepare_grid(&mut self) -> Vec<Vec<Cell>>;
+    fn prepare_grid(&mut self) -> Vec<Vec<MazeCell>>;
     fn get_neighbour( rows: &i32, columns: &i32, current_location: &Location, direction: Direction) -> Option<Location>;
     fn configure_cells(&mut self);
 }
 
 impl Grid {
-    fn prepare_grid(&mut self) -> Vec<Vec<Cell>> {
-        let mut cells: Vec<Vec<Cell>> = Vec::new();
+    fn prepare_grid(&mut self) -> Vec<Vec<MazeCell>> {
+        let mut cells: Vec<Vec<MazeCell>> = Vec::new();
 
         for r in 0..self.rows {
-            let mut row: Vec<Cell> = Vec::new();
+            let mut row: Vec<MazeCell> = Vec::new();
 
             for c in 0..self.columns {
-                row.push(Cell::empty(r, c));
+                row.push(MazeCell::empty(r, c));
             }
 
             cells.push(row)

@@ -1,14 +1,9 @@
 use rand::Rng;
 use std::ops::IndexMut;
 
+use crate::link::Link;
 use crate::location::Location;
 use crate::Grid;
-
-#[derive(Debug)]
-struct Link {
-    source: Location,
-    target: Location,
-}
 
 fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
     let mut neighbours: Vec<Location> = vec![];
@@ -20,7 +15,7 @@ fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Locati
 }
 
 pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
-    let mut links: Vec<Link> = vec![];
+    let mut all_links: Vec<Link> = vec![];
 
     for row in grid.cells.iter_mut() {
         for cell in row.iter_mut() {
@@ -35,14 +30,14 @@ pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
             } else if is_northmost_cell {
                 let eastern_location = cell.east.unwrap();
                 cell.links.push(eastern_location);
-                links.push(Link {
+                all_links.push(Link {
                     source: cell.location,
                     target: eastern_location,
                 });
             } else if is_eastmost_cell {
                 let northern_location = cell.north.unwrap();
                 cell.links.push(northern_location);
-                links.push(Link {
+                all_links.push(Link {
                     source: cell.location,
                     target: northern_location,
                 });
@@ -51,7 +46,7 @@ pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
                     binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
 
                 cell.links.push(linked_neighbour);
-                links.push(Link {
+                all_links.push(Link {
                     source: cell.location,
                     target: linked_neighbour,
                 });
@@ -60,7 +55,7 @@ pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
     }
 
     if bidirectional_link {
-        for link in links.iter() {
+        for link in all_links.iter() {
             let Link { source, target } = link;
 
             let target_cell = grid.cells.index_mut(target.row).index_mut(target.column);

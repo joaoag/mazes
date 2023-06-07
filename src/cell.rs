@@ -1,6 +1,7 @@
 use crate::direction::Direction;
 use crate::location::Location;
 
+//TODO change name so not too similar to smart pointer Cell
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct Cell {
     pub location: Location,
@@ -12,9 +13,10 @@ pub struct Cell {
 }
 
 impl Cell {
-    // pub fn link(&mut self, target_cell: Location) {
-    //     self.links.push(target_cell);
-    // }
+    pub fn link(&mut self, target_cell: Location) {
+        self.links.push(target_cell);
+    }
+
     pub fn empty(row: usize, column: usize) -> Self {
         Cell {
             location: Location { row, column },

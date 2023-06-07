@@ -1,8 +1,8 @@
 use crate::cell::Cell;
 use crate::direction::Direction;
-use crate::grid::Grid;
+use crate::smart_grid::SmartGrid;
 
-pub fn display_maze(grid: &Grid) {
+pub fn display_maze(grid: &SmartGrid) {
     let start = String::from("+");
     let middle = String::from("---+".repeat(grid.columns));
     let end = String::from("\n");
@@ -15,7 +15,7 @@ pub fn display_maze(grid: &Grid) {
 
         for cell in row.iter() {
             let body = "   ";
-            let east_boundary = if Cell::is_linked(&cell, Direction::East) {
+            let east_boundary = if Cell::is_linked(&cell.borrow(), Direction::East) {
                 " "
             } else {
                 "|"
@@ -23,7 +23,7 @@ pub fn display_maze(grid: &Grid) {
 
             top.push_str((body.to_owned() + east_boundary).as_str());
 
-            let south_boundary = if Cell::is_linked(&cell, Direction::South) {
+            let south_boundary = if Cell::is_linked(&cell.borrow(), Direction::South) {
                 "   "
             } else {
                 "---"

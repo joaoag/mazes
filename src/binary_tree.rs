@@ -3,7 +3,7 @@ use std::ops::IndexMut;
 
 use crate::link::Link;
 use crate::location::Location;
-use crate::Grid;
+use crate::smart_grid::SmartGrid;
 
 fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Location {
     let mut neighbours: Vec<Location> = vec![];
@@ -14,11 +14,10 @@ fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Locati
     linked_neighbour
 }
 
-pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
-    let mut all_links: Vec<Link> = vec![];
-
-    for row in grid.cells.iter_mut() {
-        for cell in row.iter_mut() {
+pub fn binary_tree(grid: SmartGrid, bidirectional_link: bool) -> SmartGrid {
+    for row in &grid.cells {
+        for cell in row {
+            let mut cell = cell.borrow_mut();
             let is_northmost_cell = cell.north.is_none();
             let is_eastmost_cell = cell.east.is_none();
             let is_north_eastern_cell = is_northmost_cell & is_eastmost_cell;
@@ -30,38 +29,24 @@ pub fn binary_tree(mut grid: Grid, bidirectional_link: bool) -> Grid {
             } else if is_northmost_cell {
                 let eastern_location = cell.east.unwrap();
                 cell.links.push(eastern_location);
-                all_links.push(Link {
-                    source: cell.location,
-                    target: eastern_location,
-                });
+                let mut target_cell =
+                    grid.cells[eastern_location.row][eastern_location.column].borrow_mut();
+                target_cell.links.push(cell.location);
             } else if is_eastmost_cell {
                 let northern_location = cell.north.unwrap();
                 cell.links.push(northern_location);
-                all_links.push(Link {
-                    source: cell.location,
-                    target: northern_location,
-                });
+                let mut target_cell =
+                    grid.cells[northern_location.row][northern_location.column].borrow_mut();
+                target_cell.links.push(cell.location);
             } else {
                 let linked_neighbour =
                     binary_tree_random_neighbour(cell.east.unwrap(), cell.north.unwrap());
-
                 cell.links.push(linked_neighbour);
-                all_links.push(Link {
-                    source: cell.location,
-                    target: linked_neighbour,
-                });
+                let mut target_cell =
+                    grid.cells[linked_neighbour.row][linked_neighbour.column].borrow_mut();
+                target_cell.links.push(cell.location);
             }
         }
     }
-
-    if bidirectional_link {
-        for link in all_links.iter() {
-            let Link { source, target } = link;
-
-            let target_cell = grid.cells.index_mut(target.row).index_mut(target.column);
-            target_cell.links.push(*source);
-        }
-    }
-
     grid
 }

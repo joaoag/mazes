@@ -22,9 +22,8 @@ pub fn dijkstra_simplified_solver(mut grid: SmartGrid) -> SmartGrid {
             next_frontier.extend(Vec::from_iter(current_cell.links.iter()));
             visited.extend([location]);
         }
-        frontier.clear(); // unsure if this is necessary
-        let to_explore: HashSet<_> = next_frontier.difference(&visited).collect();
-        frontier.extend(to_explore);
+
+        frontier = next_frontier.difference(&visited).copied().collect();
         distance += 1;
     }
 

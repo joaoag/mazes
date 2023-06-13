@@ -14,7 +14,8 @@ pub fn display_maze(grid: &SmartGrid) {
         let mut bottom = String::from("+");
 
         for cell in row.iter() {
-            let body = "   ";
+            let distance = cell.borrow().distance;
+            let body = format!(" {} ", distance);
             let east_boundary = if MazeCell::is_linked(&cell.borrow(), Direction::East) {
                 " "
             } else {

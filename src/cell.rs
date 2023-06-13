@@ -9,6 +9,7 @@ pub struct MazeCell {
     pub south: Option<Location>,
     pub west: Option<Location>,
     pub links: Vec<Location>,
+    pub distance: usize,
 }
 
 impl MazeCell {

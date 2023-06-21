@@ -1,4 +1,3 @@
-use crate::cell::MazeCell;
 use crate::location::Location;
 use crate::smart_grid::SmartGrid;
 use std::collections::HashSet;

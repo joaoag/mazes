@@ -9,9 +9,9 @@ fn binary_tree_random_neighbour(eastern: Location, northern: Location) -> Locati
     let mut neighbours: Vec<Location> = vec![];
     neighbours.extend([eastern, northern]);
 
-    let index = rand::thread_rng().gen_range(0..=1);
-    let linked_neighbour = neighbours[index];
-    linked_neighbour
+    let linked_location = rand::thread_rng().gen_range(0..=1);
+
+    neighbours[linked_location]
 }
 
 pub fn binary_tree(grid: SmartGrid) -> SmartGrid {

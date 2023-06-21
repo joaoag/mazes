@@ -4,7 +4,7 @@ use crate::smart_grid::SmartGrid;
 
 pub fn display_maze(grid: &SmartGrid) {
     let start = String::from("+");
-    let middle = String::from("---+".repeat(grid.columns));
+    let middle = "---+".repeat(grid.columns);
     let end = String::from("\n");
     let mut output = format!("{}{}{}", start, middle, end);
 

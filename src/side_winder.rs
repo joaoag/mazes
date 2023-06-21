@@ -16,17 +16,16 @@ pub fn side_winder(grid: SmartGrid) -> SmartGrid {
             let zero_or_one = rand::thread_rng().gen_range(0..=1);
             let should_close_run = is_eastmost_cell || (!is_northmost_cell & (zero_or_one == 0));
 
-            run.push(cell.location.clone());
+            run.push(cell.location);
 
             if should_close_run {
                 let member_location = run.choose(&mut rand::thread_rng()).unwrap();
-                let member_cell;
-                if member_location == &cell.location {
-                    member_cell = cell;
+
+                let member_cell = if member_location == &cell.location {
+                    cell
                 } else {
-                    member_cell =
-                        grid.cells[member_location.row][member_location.column].borrow_mut();
-                }
+                    grid.cells[member_location.row][member_location.column].borrow_mut()
+                };
 
                 if !is_northmost_cell {
                     let northern_location = member_cell.north.unwrap();

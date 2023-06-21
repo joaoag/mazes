@@ -103,8 +103,8 @@ impl SmartGrid {
     pub fn configure_cells(&self) {
         for row in self.cells.iter() {
             for cell in row.iter() {
-                let rows = *&self.rows as i32;
-                let columns = *&self.columns as i32;
+                let rows = self.rows as i32;
+                let columns = self.columns as i32;
                 let mut cell = cell.borrow_mut();
                 // unknown why below does not work
                 // let mut cell = *cell.borrow_mut();

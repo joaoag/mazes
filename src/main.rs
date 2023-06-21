@@ -1,20 +1,12 @@
 extern crate rand;
 
-use crate::binary_tree::binary_tree;
-use crate::dijkstra_simplified_solver::dijkstra_simplified_solver as solver;
-use crate::display::display_maze;
-use crate::side_winder::side_winder;
-use smart_grid::SmartGrid;
+use crate::maze::{display_maze, SmartGrid};
+use crate::maze_makers::{binary_tree, side_winder};
+use crate::maze_solvers::dijkstra_simplified_solver as solver;
 
-mod binary_tree;
-mod cell;
-mod dijkstra_simplified_solver;
-mod direction;
-mod display;
-mod link;
-mod location;
-mod side_winder;
-mod smart_grid;
+mod maze;
+mod maze_makers;
+mod maze_solvers;
 
 fn main() {
     let mut grid = SmartGrid {
@@ -30,3 +22,9 @@ fn main() {
     grid = solver(grid);
     display_maze(&grid);
 }
+
+//TODO - how to reorganise overly small files into sensible modules?
+// chuck everything maze structure + display related in a maze.rs file?
+// maze making algos in maze_making_algorithms.rs?
+// maze solving algos in maze_solving_algorithms.rs?
+// Yeah, that seems sensible

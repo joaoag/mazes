@@ -22,9 +22,3 @@ fn main() {
     grid = solver(grid);
     display_maze(&grid);
 }
-
-//TODO - how to reorganise overly small files into sensible modules?
-// chuck everything maze structure + display related in a maze.rs file?
-// maze making algos in maze_making_algorithms.rs?
-// maze solving algos in maze_solving_algorithms.rs?
-// Yeah, that seems sensible
